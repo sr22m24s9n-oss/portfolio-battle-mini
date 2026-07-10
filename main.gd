@@ -5,6 +5,7 @@ extends Control
 # 曲を守り抜けばCLEAR、HP0でGAME OVER。
 
 static var play_mode := "base"
+const TechnoNoteScene := preload("res://techno_note.gd")
 
 # --- 調律ノブ ---
 const W := 720.0
@@ -132,7 +133,7 @@ func _song_time() -> float:
 
 
 func _build_field() -> void:
-	_rect(Vector2.ZERO, Vector2(W, H), Color(0.09, 0.08, 0.12))
+	_rect(Vector2.ZERO, Vector2(W, H), Color.BLACK)
 	for i in range(1, LANES):
 		_rect(Vector2(W * i / LANES - 1, 0), Vector2(2, H), Color(1, 1, 1, 0.05))
 	_rect(Vector2(0, BASE_Y), Vector2(W, 4), Color(0.3, 0.9, 0.9, 0.85))         # 判定ライン
@@ -240,7 +241,7 @@ func _spawn_generated() -> void:
 func _spawn(lane: int) -> void:
 	var spawn_t := _song_time()
 	var hit_t := spawn_t + ((BASE_Y - SPAWN_Y) / SPEED)
-	var r := _rect(Vector2(lane_x[lane] - 40, SPAWN_Y), Vector2(80, 80), Color(0.85, 0.4, 0.35))
+	var r := _techno_note(lane, Vector2(lane_x[lane] - 40, SPAWN_Y))
 	enemies.append({ "rect": r, "lane": lane })
 	_record_note(lane, spawn_t, hit_t)
 
@@ -249,7 +250,7 @@ func _spawn_chart_note(note: Dictionary) -> void:
 	var lane := clampi(int(note.get("lane", 1)), 0, LANES - 1)
 	var hit_t := float(note.get("target_time", note.get("t", 0.0)))
 	var spawn_t := float(note.get("spawn_time", hit_t - TRACE_APPROACH_TIME))
-	var r := _rect(Vector2(lane_x[lane] - 40, SPAWN_Y), Vector2(80, 80), Color(0.65, 0.55, 1.0))
+	var r := _techno_note(lane, Vector2(lane_x[lane] - 40, SPAWN_Y))
 	enemies.append({ "rect": r, "lane": lane, "hit_t": hit_t, "spawn_t": spawn_t })
 	_record_note(lane, spawn_t, hit_t)
 
@@ -471,6 +472,15 @@ func _rect(pos: Vector2, sz: Vector2, col: Color) -> ColorRect:
 	r.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(r)
 	return r
+
+
+func _techno_note(lane: int, pos: Vector2) -> TechnoNote:
+	var note := TechnoNoteScene.new() as TechnoNote
+	note.position = pos
+	note.size = Vector2(80, 80)
+	note.setup(lane)
+	add_child(note)
+	return note
 
 
 func _label(pos: Vector2, text: String, fsize: int) -> Label:
