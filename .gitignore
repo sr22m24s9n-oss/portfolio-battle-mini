@@ -10,3 +10,6 @@
 # Keep the web/runtime audio light; WAV masters stay local until needed.
 /audio/*.wav
 /audio/*.wav.import
+
+# Godot may import generated web preview images after export; Pages does not need them.
+/docs/play/*.import
