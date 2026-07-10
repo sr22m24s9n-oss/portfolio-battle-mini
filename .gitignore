@@ -1,0 +1,12 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Local process evidence and review assets are curated before publishing.
+/logs/
+/screenshots/
+/portfolio_assets/
+
+# Keep the web/runtime audio light; WAV masters stay local until needed.
+/audio/*.wav
+/audio/*.wav.import
