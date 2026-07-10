@@ -4,6 +4,12 @@
 
 この作品は、ゲームそのものだけでなく、AIエージェントとの協働で「人間のフィードバックを記録し、次の体験へ戻す」流れを見せるためのポートフォリオです。
 
+## Public Page
+
+https://sr22m24s9n-oss.github.io/portfolio-battle-mini/
+
+![Portfolio Battle Mini QR](docs/assets/portfolio-battle-mini-qr.png)
+
 ## Current Build
 
 - Godot 4.6
