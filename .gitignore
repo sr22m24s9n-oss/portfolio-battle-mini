@@ -13,3 +13,4 @@
 
 # Godot may import generated web preview images after export; Pages does not need them.
 /docs/play/*.import
+/docs/assets/*.import

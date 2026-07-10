@@ -8,6 +8,7 @@ const H := 1280.0
 const OPTIONS := [
 	{ "label": "このゲームの開発の考え方", "action": "adv:philosophy" },
 	{ "label": "Claudeとの実際のやり取り", "action": "adv:dialogue" },
+	{ "label": "ChatGPTとの実際のやり取り", "action": "adv:chatgpt" },
 	{ "label": "ゲームをプレイ", "action": "game" },
 	{ "label": "痕跡譜面で遊ぶ", "action": "trace" },
 	{ "label": "おわり", "action": "quit" },
