@@ -241,7 +241,7 @@ func _spawn_generated() -> void:
 func _spawn(lane: int) -> void:
 	var spawn_t := _song_time()
 	var hit_t := spawn_t + ((BASE_Y - SPAWN_Y) / SPEED)
-	var r := _techno_note(lane, Vector2(lane_x[lane] - 40, SPAWN_Y))
+	var r := _techno_note(lane, Vector2(lane_x[lane] - 85, SPAWN_Y))
 	enemies.append({ "rect": r, "lane": lane })
 	_record_note(lane, spawn_t, hit_t)
 
@@ -250,7 +250,7 @@ func _spawn_chart_note(note: Dictionary) -> void:
 	var lane := clampi(int(note.get("lane", 1)), 0, LANES - 1)
 	var hit_t := float(note.get("target_time", note.get("t", 0.0)))
 	var spawn_t := float(note.get("spawn_time", hit_t - TRACE_APPROACH_TIME))
-	var r := _techno_note(lane, Vector2(lane_x[lane] - 40, SPAWN_Y))
+	var r := _techno_note(lane, Vector2(lane_x[lane] - 85, SPAWN_Y))
 	enemies.append({ "rect": r, "lane": lane, "hit_t": hit_t, "spawn_t": spawn_t })
 	_record_note(lane, spawn_t, hit_t)
 
@@ -477,7 +477,7 @@ func _rect(pos: Vector2, sz: Vector2, col: Color) -> ColorRect:
 func _techno_note(lane: int, pos: Vector2) -> TechnoNote:
 	var note := TechnoNoteScene.new() as TechnoNote
 	note.position = pos
-	note.size = Vector2(80, 80)
+	note.size = Vector2(170, 54)
 	note.setup(lane)
 	add_child(note)
 	return note

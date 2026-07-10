@@ -18,24 +18,19 @@ func setup(lane: int) -> void:
 
 
 func _draw() -> void:
-	var center := size * 0.5
-	var pulse := 0.94 + sin(Time.get_ticks_msec() * 0.009) * 0.04
-	var outer_radius := minf(size.x, size.y) * 0.44 * pulse
-	var ring_radius := outer_radius * 0.72
-	var core_radius := outer_radius * 0.34
+	var pulse := 0.74 + sin(Time.get_ticks_msec() * 0.009) * 0.12
+	var glow := Rect2(2, 8, size.x - 4, size.y - 16)
+	var body := Rect2(8, 14, size.x - 16, size.y - 28)
+	var core := Rect2(18, 23, size.x - 36, 6)
 
-	# 黒背景でも輪郭が沈まない、薄い発光層。
-	draw_circle(center, outer_radius, Color(note_color, 0.14))
-	draw_arc(center, outer_radius * 0.88, 0.0, TAU, 48, Color(note_color, 0.72), 4.0, true)
-	draw_arc(center, ring_radius, 0.0, TAU, 48, Color.WHITE, 3.0, true)
-	draw_circle(center, core_radius, note_color)
-	draw_circle(center, core_radius * 0.43, Color(1.0, 1.0, 1.0, 0.92))
-
-	# 電子パルスを思わせる4本の短い目盛り。
-	for angle in [0.0, PI * 0.5, PI, PI * 1.5]:
-		var from := center + Vector2.from_angle(angle) * outer_radius * 0.91
-		var to := center + Vector2.from_angle(angle) * outer_radius * 1.08
-		draw_line(from, to, Color(note_color, 0.9), 3.0, true)
+	# 判定線とは異なる厚みを持つ、横長の電子パルスバー。
+	draw_rect(glow, Color(note_color, 0.18 * pulse), true)
+	draw_rect(body, Color(0.01, 0.02, 0.03, 0.94), true)
+	draw_rect(body, Color(note_color, 0.95), false, 4.0, true)
+	draw_rect(core, Color(note_color, pulse), true)
+	draw_rect(Rect2(size.x * 0.5 - 18, 18, 36, 16), Color(1.0, 1.0, 1.0, 0.88), true)
+	draw_line(Vector2(18, size.y * 0.5), Vector2(4, size.y * 0.5), note_color, 4.0, true)
+	draw_line(Vector2(size.x - 18, size.y * 0.5), Vector2(size.x - 4, size.y * 0.5), note_color, 4.0, true)
 
 
 func _process(_delta: float) -> void:
