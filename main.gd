@@ -1,6 +1,7 @@
 extends Control
 # レーン防衛リズム — 遊べる音ゲー（通常譜面＋直近プレイの痕跡譜面）
-# 通常プレイのタップを保存し、次回用の「痕跡譜面」に変換する。
+# プレイ中のタップをそのまま保存し、次回用の「痕跡譜面」にする。
+# 間引き・拍寄せ・範囲制限は掛けない＝タップの痕跡そのものが譜面（エディット譜面として使える）。
 # 玉のレーンをタイミングよく叩く: ライン近く=GOOD / 少し外れ=BAD / 取り逃し=MISS(HP減)。
 # 曲を守り抜けばCLEAR、HP0でGAME OVER。
 
@@ -35,12 +36,6 @@ const TRACE_CHART_PATH := "user://trace_chart_latest.json"
 const TRACE_APPROACH_TIME_FAST_PREVIEW := 1.8 # previous quick preview value; keep for easy revert.
 const TRACE_APPROACH_TIME_SLOW_PREVIEW := 8.0
 const TRACE_APPROACH_TIME := BASE_APPROACH_TIME
-const TRACE_MIN_GAP := 0.32
-const TRACE_MIN_NOTES := 6
-const TRACE_START_PAD := 2.0
-const TRACE_END_PAD := 1.4
-const TRACE_SNAP_WINDOW := 0.16
-const TRACE_SNAP_BLEND := 0.45
 
 # --- 状態 ---
 var beat_interval := 60.0 / BPM
@@ -380,8 +375,6 @@ func _finish(win: bool) -> void:
 func _trace_result_text() -> String:
 	if trace_chart_written:
 		return "痕跡譜面を更新"
-	if run_taps.size() > 0:
-		return "痕跡は記録（譜面化には少なめ）"
 	return "痕跡なし"
 
 
@@ -402,31 +395,23 @@ func _save_trace_run(win: bool) -> void:
 
 
 func _build_trace_chart_from_taps() -> bool:
+	# タップを一切加工せず全件を譜面化する（間引き・拍寄せ・開始終了の除外なし）。
 	var notes: Array = []
-	var last_t := -999.0
 	for tap in run_taps:
-		var t := float((tap as Dictionary).get("time", 0.0))
-		if t < TRACE_START_PAD:
-			continue
-		if song_length > 0.0 and t > song_length - TRACE_END_PAD:
-			continue
-		if t - last_t < TRACE_MIN_GAP:
-			continue
-		var target_t := _soft_snap_time(t)
+		var target_t := maxf(0.0, float((tap as Dictionary).get("time", 0.0)))
 		notes.append({
 			"id": notes.size() + 1,
 			"lane": clampi(int((tap as Dictionary).get("lane", 1)), 0, LANES - 1),
 			"spawn_time": maxf(0.0, target_t - TRACE_APPROACH_TIME),
 			"target_time": target_t
 		})
-		last_t = t
-	if notes.size() < TRACE_MIN_NOTES:
+	if notes.is_empty():
 		return false
 	var chart := {
 		"song": "kyrgyz_techno_anthem",
 		"audio": "res://audio/kyrgyz_techno_anthem.ogg",
 		"source": TRACE_RUN_PATH,
-		"method": "tap trace -> min-gap filter -> light beat snap",
+		"method": "raw tap trace (no filter, no snap)",
 		"bpm": BPM,
 		"offset": OFFSET,
 		"approach_time": TRACE_APPROACH_TIME,
@@ -436,14 +421,6 @@ func _build_trace_chart_from_taps() -> bool:
 	}
 	_save_json(TRACE_CHART_PATH, chart)
 	return true
-
-
-func _soft_snap_time(t: float) -> float:
-	var beat_idx := roundf((t - OFFSET) / beat_interval)
-	var nearest := OFFSET + beat_idx * beat_interval
-	if absf(nearest - t) <= TRACE_SNAP_WINDOW:
-		return lerpf(t, nearest, TRACE_SNAP_BLEND)
-	return t
 
 
 func _save_json(path: String, data: Dictionary) -> void:
